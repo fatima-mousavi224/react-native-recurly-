@@ -17,6 +17,14 @@
     --color-destructive: #dc2626;
     --color-subscription: #8fd1bd;
 
+    --font-sans: snas-regular;
+    --font-snas-light: snas-light;
+    --font-snas-medium: snas-medium;
+    --font-snas-semibold: snas-semibold;
+    --font-snas-bold: snas-bold;
+    --font-snas-extrabold: snas-extrabold;
+    
+
     --spacing-0: 0px;
     --spacing-1: 4px;
     --spacing-2: 8px;

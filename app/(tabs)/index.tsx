@@ -11,8 +11,11 @@ export default function App() {
         and put p-5 on this inner <View> so the padding actually works!
       */}
       <View className="flex-1 p-5">
-        <Text className="text-xl font-bold text-blue-500">
-          Welcome to Nativewind!
+        <Text className="text-7xl font-sans-extrabold">
+          Home
+        </Text>
+        <Text className="text-7xl font-bold">
+          Home
         </Text>
 
         <Link href="./onboarding" className="mt-4 rounded bg-purple-300 p-4">

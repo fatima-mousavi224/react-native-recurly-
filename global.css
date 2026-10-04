@@ -109,7 +109,7 @@
 }
 
 @utility home-balance-label {
-  @apply text-xl font-sans-semibold text-white/80;
+  @apply text-xl font-sans-semibold text-primary;
 }
 
 @utility home-balance-row {
@@ -117,11 +117,11 @@
 }
 
 @utility home-balance-amount {
-  @apply text-4xl font-sans-extrabold text-white;
+  @apply text-4xl font-sans-extrabold text-primary;
 }
 
 @utility home-balance-date {
-  @apply text-xl font-sans-medium text-white;
+  @apply text-xl font-sans-medium text-primary;
 }
 
 /* List Utilities */

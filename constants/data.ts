@@ -11,6 +11,9 @@ export const HOME_USER = {
     name: "Adrian | JS Mastery",
 };
 
+export const HOME_DEMO_NOTICE =
+    "Static demo — balances, renewal dates, and countdowns are sample data, not current payment timing.";
+
 export const HOME_BALANCE = {
     amount: 2489.48,
     nextRenewalDate: "2026-03-18T09:00:00.000Z",

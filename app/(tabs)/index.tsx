@@ -3,6 +3,7 @@ import SubscriptionsCard from "@/components/SubscriptionsCard";
 import UpcomingSubscriptionsCard from "@/components/UpcomingSubscriptionsCard";
 import {
   HOME_BALANCE,
+  HOME_DEMO_NOTICE,
   HOME_SUBSCRIPTIONS,
   HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
@@ -50,6 +51,10 @@ export default function App() {
                     style={{ height: 32, width: 32 }}
                   />
                 </View>
+
+                <Text className="my-2 text-sm text-primary">
+                  {HOME_DEMO_NOTICE}
+                </Text>
 
                 {/* 2. Balance Card */}
                 <View className="home-balance-card">

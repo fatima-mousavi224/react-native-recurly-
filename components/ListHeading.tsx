@@ -1,7 +1,8 @@
 import { Text, View } from "react-native";
 
 interface ListHeadingProps {
-    title: string;
+  title: string;
+  onPress: () => void;
 }
 
 const ListHeading = ({title}: ListHeadingProps) => {

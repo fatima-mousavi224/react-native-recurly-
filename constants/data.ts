@@ -1,49 +1,66 @@
+
 import { icons } from "./icons";
 
 export const tabs: AppTab[] = [
-    { name: "index", title: "Home", icon: icons.home },
-    { name: "subscriptions", title: "Subscriptions", icon: icons.wallet },
-    { name: "insights", title: "Insights", icon: icons.activity },
-    { name: "settings", title: "Settings", icon: icons.setting },
+  {
+    name: "index",
+    title: "Home",
+    icon: icons.home,
+  },
+  {
+    name: "subscriptions",
+    title: "Subscriptions",
+    icon: icons.wallet,
+  },
+  {
+    name: "insights",
+    title: "Insights",
+    icon: icons.activity,
+  },
+  {
+    name: "settings",
+    title: "Settings",
+    icon: icons.setting,
+  },
 ];
 
 export const HOME_USER = {
-    name: "Adrian | JS Mastery",
+  name: "Adrian | JS Mastery",
 };
 
 export const HOME_DEMO_NOTICE =
     "Static demo — balances, renewal dates, and countdowns are sample data, not current payment timing.";
 
 export const HOME_BALANCE = {
-    amount: 2489.48,
-    nextRenewalDate: "2026-03-18T09:00:00.000Z",
+  amount: 2489.48,
+  nextRenewalDate: "2026-10-06T09:00:00.000Z",
 };
 
-export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
-    {
-        id: "spotify",
-        icon: icons.spotify,
-        name: "Spotify",
-        price: 5.99,
-        currency: "USD",
-        daysLeft: 2,
-    },
-    {
-        id: "notion",
-        icon: icons.notion,
-        name: "Notion",
-        price: 12.0,
-        currency: "USD",
-        daysLeft: 4,
-    },
-    {
-        id: "figma",
-        icon: icons.figma,
-        name: "Figma",
-        price: 15.0,
-        currency: "USD",
-        daysLeft: 6,
-    },
+export const UPCOMING_SUBSCRIPTIONS = [
+  {
+    id: "spotify",
+    icon: icons.spotify,
+    name: "Spotify",
+    price: 5.99,
+    currency: "USD",
+    renewalDate: "2026-10-06T09:00:00.000Z",
+  },
+  {
+    id: "notion",
+    icon: icons.notion,
+    name: "Notion",
+    price: 12.0,
+    currency: "USD",
+    renewalDate: "2026-10-08T09:00:00.000Z",
+  },
+  {
+    id: "figma",
+    icon: icons.figma,
+    name: "Figma",
+    price: 15.0,
+    currency: "USD",
+    renewalDate: "2026-10-10T09:00:00.000Z",
+  },
 ];
 
 export const HOME_SUBSCRIPTIONS: Subscription[] = [

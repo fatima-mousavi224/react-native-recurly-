@@ -1,16 +1,24 @@
-import { Link } from 'expo-router'
-import React, { Component } from 'react'
-import { Text, View } from 'react-native'
+import { AuthCard } from '@/components/auth-pages/AuthCard';
+import { Header } from '@/components/auth-pages/Header';
+import { SignInForm } from '@/components/auth-pages/SignInForm';
+import React from 'react';
+import { SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 
-export class SignIn extends Component {
-  render() {
-    return (
-      <View>
-        <Text> Sign In Page wellcome  </Text>
-        <Link href='/(auth)/sign-in'>Sign in </Link>
-      </View>
-    )
-  }
+export default function SignInScreen() {
+  return (
+    <SafeAreaView className="flex-1 bg-[#FAF6ED]">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 px-6 justify-center"
+      >
+        <Header
+          title="Welcome back"
+          subtitle="Sign in to continue managing your subscriptions"
+        />
+        <AuthCard>
+          <SignInForm/>
+        </AuthCard>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }
-
-export default SignIn

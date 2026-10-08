@@ -1,15 +1,40 @@
-
 import "@/global.css";
 
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { tokenCache } from "../utils/cache";
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 // Prevent Expo from hiding the splash screen
 // before the app and fonts are ready.
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Ignore if the splash screen has already been prevented.
 });
+
+function InitialLayout() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (!isSignedIn && !inAuthGroup) {
+      // Redirect unauthenticated user to Sign In
+      router.replace("/sign-in");
+    } else if (isSignedIn && inAuthGroup) {
+      // Redirect signed-in user away from Auth to Home Tabs
+      router.replace("/(tabs)");
+    }
+  }, [isSignedIn, isLoaded, segments]);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
+}
 
 export default function RootLayout() {
   const [fontLoaded, fontError] = useFonts({
@@ -38,6 +63,11 @@ export default function RootLayout() {
     console.error("Failed to load fonts:", fontError);
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <ClerkLoaded>
+        <InitialLayout />
+      </ClerkLoaded>
+    </ClerkProvider>
+  );
 }
-

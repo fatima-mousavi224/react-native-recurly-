@@ -3,16 +3,13 @@ import "@/global.css";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "../utils/cache";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+// Fallback to empty string if env variable is missing to prevent M_ID undefined error
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
-// Prevent Expo from hiding the splash screen
-// before the app and fonts are ready.
-SplashScreen.preventAutoHideAsync().catch(() => {
-  // Ignore if the splash screen has already been prevented.
-});
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function InitialLayout() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -25,10 +22,8 @@ function InitialLayout() {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!isSignedIn && !inAuthGroup) {
-      // Redirect unauthenticated user to Sign In
       router.replace("/sign-in");
     } else if (isSignedIn && inAuthGroup) {
-      // Redirect signed-in user away from Auth to Home Tabs
       router.replace("/(tabs)");
     }
   }, [isSignedIn, isLoaded, segments]);
@@ -52,22 +47,13 @@ export default function RootLayout() {
     }
   }, [fontLoaded, fontError]);
 
-  // Keep the splash screen visible while fonts are loading.
   if (!fontLoaded && !fontError) {
     return null;
   }
 
-  // If fonts fail, log the error and continue
-  // with the system/fallback font.
-  if (fontError) {
-    console.error("Failed to load fonts:", fontError);
-  }
-
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <InitialLayout />
-      </ClerkLoaded>
+      <InitialLayout />
     </ClerkProvider>
   );
 }

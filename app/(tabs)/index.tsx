@@ -1,4 +1,3 @@
-
 import ListHeading from "@/components/ListHeading";
 import SubscriptionsCard from "@/components/SubscriptionsCard";
 import UpcomingSubscriptionsCard from "@/components/UpcomingSubscriptionsCard";
@@ -6,7 +5,6 @@ import {
   HOME_BALANCE,
   HOME_DEMO_NOTICE,
   HOME_SUBSCRIPTIONS,
-  HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
 import { icons } from "@/constants/icons";
@@ -14,6 +12,7 @@ import images from "@/constants/images";
 import "@/global.css";
 import { formatCurrency } from "@/lib/utils";
 
+import { useUser } from "@clerk/clerk-expo";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -22,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
 
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
@@ -29,11 +29,19 @@ export default function App() {
 
   const upcomingSubscriptions = UPCOMING_SUBSCRIPTIONS.map((subscription) => ({
     ...subscription,
-    daysLeft: Math.max(
-      0,
-      dayjs(subscription.renewalDate).diff(dayjs(), "day"),
-    ),
+    daysLeft: Math.max(0, dayjs(subscription.renewalDate).diff(dayjs(), "day")),
   }));
+
+  // Safely extract name and profile image
+  const userName =
+    isLoaded && user
+      ? user.firstName ||
+        user.primaryEmailAddress?.emailAddress?.split("@")[0] ||
+        "User"
+      : "User";
+
+  const userAvatar =
+    isLoaded && user?.imageUrl ? { uri: user.imageUrl } : images.avatar;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -49,7 +57,7 @@ export default function App() {
                 <View className="home-header">
                   <View className="home-user">
                     <Image
-                      source={images.avatar}
+                      source={userAvatar}
                       className="home-avatar"
                       style={{
                         width: 64,
@@ -59,13 +67,13 @@ export default function App() {
                     />
 
                     <Text className="home-user-name text-base font-sans-bold">
-                      {HOME_USER.name}
+                      {userName}
                     </Text>
                   </View>
 
                   <Image
                     source={icons.add}
-                    className="home-add-icon"
+                    className="home-add-icon rounded-full"
                     style={{
                       height: 32,
                       width: 32,
@@ -77,7 +85,7 @@ export default function App() {
                   {HOME_DEMO_NOTICE}
                 </Text>
 
-                {/* 2. Balance Card */}
+                {/* Balance Card */}
                 <View className="home-balance-card">
                   <Text className="home-balance-label text-[#3B1F16]">
                     Balance
@@ -141,9 +149,7 @@ export default function App() {
             ItemSeparatorComponent={() => <View className="h-4" />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <Text className="home-empty-state">
-                No Subscriptions Yet.
-              </Text>
+              <Text className="home-empty-state">No Subscriptions Yet.</Text>
             }
             contentContainerClassName="pb-30"
           />

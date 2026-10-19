@@ -1,5 +1,6 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { posthog, posthogLogger } from "@/lib/posthog";
 import { useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "./Button";
@@ -17,6 +18,10 @@ export function SignInForm() {
       const result = await signIn.create({ identifier: email, password });
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+        posthog?.capture("sign_in_completed");
+        posthogLogger.info("authentication completed", {
+          flow: "sign_in",
+        });
       }
     } catch (err: any) {
       Alert.alert("Error", err.errors?.[0]?.message || "Sign in failed");

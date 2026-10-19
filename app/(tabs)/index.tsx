@@ -10,6 +10,7 @@ import {
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
+import { posthog, posthogLogger } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 
 import { useUser } from "@clerk/clerk-expo";
@@ -42,6 +43,28 @@ export default function App() {
 
   const userAvatar =
     isLoaded && user?.imageUrl ? { uri: user.imageUrl } : images.avatar;
+
+  const openSubscriptions = (source: "upcoming" | "all") => {
+    posthog?.capture("subscription_list_opened", { source });
+    posthogLogger.info("subscription list opened", {
+      source,
+    });
+    router.push("/subscriptions");
+  };
+
+  const toggleSubscriptionDetails = (
+    subscription: (typeof HOME_SUBSCRIPTIONS)[number],
+  ) => {
+    const expanded = expandedSubscriptionId !== subscription.id;
+
+    posthog?.capture("subscription_details_toggled", {
+      subscription_id: subscription.id,
+      subscription_category: subscription.category ?? "",
+      subscription_status: subscription.status ?? "",
+      expanded,
+    });
+    setExpandedSubscriptionId(expanded ? subscription.id : null);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -106,7 +129,7 @@ export default function App() {
                 <View className="mb-5">
                   <ListHeading
                     title="Upcoming"
-                    onPress={() => router.push("/subscriptions")}
+                    onPress={() => openSubscriptions("upcoming")}
                   />
 
                   <FlatList
@@ -128,7 +151,7 @@ export default function App() {
                 {/* All Subscriptions */}
                 <ListHeading
                   title="All Subscriptions"
-                  onPress={() => router.push("/subscriptions")}
+                  onPress={() => openSubscriptions("all")}
                 />
               </>
             )}
@@ -138,11 +161,7 @@ export default function App() {
               <SubscriptionsCard
                 {...item}
                 expanded={expandedSubscriptionId === item.id}
-                onPress={() =>
-                  setExpandedSubscriptionId((currentId) =>
-                    currentId === item.id ? null : item.id,
-                  )
-                }
+                onPress={() => toggleSubscriptionDetails(item)}
               />
             )}
             extraData={expandedSubscriptionId}

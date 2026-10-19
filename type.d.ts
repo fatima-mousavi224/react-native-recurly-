@@ -24,8 +24,11 @@ declare global {
         price: number;
         currency?: string;
         billing: string;
+        frequency?: string;
         renewalDate?: string;
         color?: string;
+        iconType?: "Ionicons" | "MaterialCommunityIcons" | "FontAwesome";
+        iconName?: string;
     }
 
     interface SubscriptionCardProps extends Omit<Subscription, "id"> {

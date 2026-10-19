@@ -172,7 +172,7 @@
 }
 
 @utility sub-card-expanded {
-  @apply bg-subscription;
+  @apply rounded-2xl border border-border p-4;
 }
 
 @utility sub-head {

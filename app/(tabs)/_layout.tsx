@@ -1,3 +1,4 @@
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { tabs } from "@/constants/data";
 import { colors, components } from "@/constants/theme";
 
@@ -49,7 +50,8 @@ const TabLayout = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <Tabs
+    <SubscriptionProvider>
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -89,7 +91,8 @@ const TabLayout = () => {
           }}
         />
       ))}
-    </Tabs>
+      </Tabs>
+    </SubscriptionProvider>
   );
 };
 

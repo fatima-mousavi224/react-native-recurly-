@@ -1,10 +1,11 @@
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import ListHeading from "@/components/ListHeading";
 import SubscriptionsCard from "@/components/SubscriptionsCard";
 import UpcomingSubscriptionsCard from "@/components/UpcomingSubscriptionsCard";
+import { useSubscriptions } from "@/context/SubscriptionContext";
 import {
   HOME_BALANCE,
   HOME_DEMO_NOTICE,
-  HOME_SUBSCRIPTIONS,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
 import { icons } from "@/constants/icons";
@@ -16,17 +17,18 @@ import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-expo";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
-
+  const { subscriptions, addSubscription } = useSubscriptions();
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
   >(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const upcomingSubscriptions = UPCOMING_SUBSCRIPTIONS.map((subscription) => ({
     ...subscription,
@@ -52,8 +54,16 @@ export default function App() {
     router.push("/subscriptions");
   };
 
+  const handleAddSubscription = useCallback(
+    (subscription: Subscription) => {
+      addSubscription(subscription);
+      setIsModalVisible(false);
+    },
+    [addSubscription],
+  );
+
   const toggleSubscriptionDetails = (
-    subscription: (typeof HOME_SUBSCRIPTIONS)[number],
+    subscription: Subscription,
   ) => {
     const expanded = expandedSubscriptionId !== subscription.id;
 
@@ -94,14 +104,16 @@ export default function App() {
                     </Text>
                   </View>
 
-                  <Image
-                    source={icons.add}
-                    className="home-add-icon rounded-full"
-                    style={{
-                      height: 32,
-                      width: 32,
-                    }}
-                  />
+                  <Pressable onPress={() => setIsModalVisible(true)}>
+                    <Image
+                      source={icons.add}
+                      className="home-add-icon rounded-full"
+                      style={{
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  </Pressable>
                 </View>
 
                 <Text className="my-2 text-sm text-primary">
@@ -155,7 +167,7 @@ export default function App() {
                 />
               </>
             )}
-            data={HOME_SUBSCRIPTIONS}
+            data={subscriptions}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <SubscriptionsCard
@@ -174,6 +186,12 @@ export default function App() {
           />
         </View>
       </ScrollView>
+
+      <CreateSubscriptionModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onAdd={handleAddSubscription}
+      />
     </SafeAreaView>
   );
 }

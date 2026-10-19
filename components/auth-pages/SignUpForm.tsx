@@ -1,5 +1,6 @@
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { posthog } from "@/lib/posthog";
 import { useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "./Button";
@@ -46,9 +47,10 @@ export function SignUpForm({ onSignUpCreated }: Props) {
         strategy: "email_code",
       });
 
+      posthog?.capture("sign_up_started");
       onSignUpCreated(email);
     } catch (err: any) {
-      console.error("Sign Up Error:", JSON.stringify(err, null, 2));
+      console.error("Sign Up Error:", JSON.stringify({ message: err?.message, code: err?.code, errors: err?.errors }, null, 2));
 
       const errorMessage =
         err.errors?.[0]?.longMessage ||

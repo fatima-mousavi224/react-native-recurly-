@@ -1,6 +1,13 @@
 import { formatCurrency, formatStatusLabel, formatSubscriptionDateTime } from "@/lib/utils";
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import clsx from "clsx";
 import { Image, Pressable, Text, View } from "react-native";
+
+const ICON_TYPE_MAP = {
+  Ionicons,
+  MaterialCommunityIcons,
+  FontAwesome,
+} as const;
 
 const SubscriptionsCard = ({
   name,
@@ -16,8 +23,12 @@ const SubscriptionsCard = ({
   paymentMethod,
   startDate,
   onPress,
-  status
+  status,
+  iconType,
+  iconName,
 }: SubscriptionCardProps) => {
+  const iconColor = color || "#8fd1bd";
+  const IconComponent = iconType ? ICON_TYPE_MAP[iconType as keyof typeof ICON_TYPE_MAP] : null;
   return (
     <Pressable
       onPress={onPress}
@@ -29,11 +40,25 @@ const SubscriptionsCard = ({
     >
       <View className="sub-head ">
         <View className="sub-main">
-          <Image
-            source={icon}
-            className="sub-icon"
-            style={{ width: 46, height: 46 }}
-          />
+          <View
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: 23,
+              backgroundColor: iconColor,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {IconComponent && iconName ? (
+              <IconComponent name={iconName as any} size={24} color="#fff" />
+            ) : (
+              <Image
+                source={icon}
+                style={{ width: 30, height: 30 }}
+              />
+            )}
+          </View>
           <View className="sub-copy">
             <Text numberOfLines={1} className="sub-title">
               {name}

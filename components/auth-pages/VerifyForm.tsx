@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import { useSignUp } from '@clerk/clerk-expo';
+import { posthog, posthogLogger } from '@/lib/posthog';
 import { Input } from './Input';
 import { Button } from './Button';
 
@@ -29,12 +30,16 @@ export function VerifyForm() {
       if (completeSignUp.status === 'complete') {
         console.log('Verification successful! Setting active session...');
         await setActive({ session: completeSignUp.createdSessionId });
+        posthog?.capture('sign_up_completed');
+        posthogLogger.info('authentication completed', {
+          flow: 'sign_up',
+        });
       } else {
         console.log('Verification status incomplete:', completeSignUp);
         Alert.alert('Error', 'Verification status incomplete. Please try again.');
       }
     } catch (err: any) {
-      console.error('Verification Error:', JSON.stringify(err, null, 2));
+      console.error('Verification Error:', JSON.stringify({ message: err?.message, code: err?.code, errors: err?.errors }, null, 2));
 
       const errorMessage =
         err.errors?.[0]?.longMessage ||

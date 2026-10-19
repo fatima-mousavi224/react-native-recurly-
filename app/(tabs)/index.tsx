@@ -1,31 +1,34 @@
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import ListHeading from "@/components/ListHeading";
 import SubscriptionsCard from "@/components/SubscriptionsCard";
 import UpcomingSubscriptionsCard from "@/components/UpcomingSubscriptionsCard";
+import { useSubscriptions } from "@/context/SubscriptionContext";
 import {
   HOME_BALANCE,
   HOME_DEMO_NOTICE,
-  HOME_SUBSCRIPTIONS,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
+import { posthog, posthogLogger } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 
 import { useUser } from "@clerk/clerk-expo";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
-
+  const { subscriptions, addSubscription } = useSubscriptions();
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
   >(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const upcomingSubscriptions = UPCOMING_SUBSCRIPTIONS.map((subscription) => ({
     ...subscription,
@@ -42,6 +45,36 @@ export default function App() {
 
   const userAvatar =
     isLoaded && user?.imageUrl ? { uri: user.imageUrl } : images.avatar;
+
+  const openSubscriptions = (source: "upcoming" | "all") => {
+    posthog?.capture("subscription_list_opened", { source });
+    posthogLogger.info("subscription list opened", {
+      source,
+    });
+    router.push("/subscriptions");
+  };
+
+  const handleAddSubscription = useCallback(
+    (subscription: Subscription) => {
+      addSubscription(subscription);
+      setIsModalVisible(false);
+    },
+    [addSubscription],
+  );
+
+  const toggleSubscriptionDetails = (
+    subscription: Subscription,
+  ) => {
+    const expanded = expandedSubscriptionId !== subscription.id;
+
+    posthog?.capture("subscription_details_toggled", {
+      subscription_id: subscription.id,
+      subscription_category: subscription.category ?? "",
+      subscription_status: subscription.status ?? "",
+      expanded,
+    });
+    setExpandedSubscriptionId(expanded ? subscription.id : null);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -71,14 +104,16 @@ export default function App() {
                     </Text>
                   </View>
 
-                  <Image
-                    source={icons.add}
-                    className="home-add-icon rounded-full"
-                    style={{
-                      height: 32,
-                      width: 32,
-                    }}
-                  />
+                  <Pressable onPress={() => setIsModalVisible(true)}>
+                    <Image
+                      source={icons.add}
+                      className="home-add-icon rounded-full"
+                      style={{
+                        height: 32,
+                        width: 32,
+                      }}
+                    />
+                  </Pressable>
                 </View>
 
                 <Text className="my-2 text-sm text-primary">
@@ -106,7 +141,7 @@ export default function App() {
                 <View className="mb-5">
                   <ListHeading
                     title="Upcoming"
-                    onPress={() => router.push("/subscriptions")}
+                    onPress={() => openSubscriptions("upcoming")}
                   />
 
                   <FlatList
@@ -128,21 +163,17 @@ export default function App() {
                 {/* All Subscriptions */}
                 <ListHeading
                   title="All Subscriptions"
-                  onPress={() => router.push("/subscriptions")}
+                  onPress={() => openSubscriptions("all")}
                 />
               </>
             )}
-            data={HOME_SUBSCRIPTIONS}
+            data={subscriptions}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <SubscriptionsCard
                 {...item}
                 expanded={expandedSubscriptionId === item.id}
-                onPress={() =>
-                  setExpandedSubscriptionId((currentId) =>
-                    currentId === item.id ? null : item.id,
-                  )
-                }
+                onPress={() => toggleSubscriptionDetails(item)}
               />
             )}
             extraData={expandedSubscriptionId}
@@ -155,6 +186,12 @@ export default function App() {
           />
         </View>
       </ScrollView>
+
+      <CreateSubscriptionModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onAdd={handleAddSubscription}
+      />
     </SafeAreaView>
   );
 }

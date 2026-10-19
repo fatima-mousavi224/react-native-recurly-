@@ -40,11 +40,10 @@ export default function AuthScreen() {
 
         <AuthCard>
           {step === 'signin' && (
-            <SignInForm onNavigateToSignUp={() => setStep('signup')} />
+            <SignInForm />
           )}
           {step === 'signup' && (
             <SignUpForm
-              onNavigateToSignIn={() => setStep('signin')}
               onSignUpCreated={handleSignUpCreated}
             />
           )}
